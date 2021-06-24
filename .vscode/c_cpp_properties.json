@@ -1,0 +1,16 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${default}",
+                "${workspaceFolder}/../../devel/include/**"
+            ],
+            "defines": [],
+            "cStandard": "gnu11",
+            "cppStandard": "c++14",
+            "compilerArgs": []
+        }
+    ],
+    "version": 4
+}

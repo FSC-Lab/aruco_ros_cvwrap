@@ -1,0 +1,21 @@
+<launch>
+  <arg name="launch_prefix" default="" />
+  <!-- set to value="gdbserver localhost:10000" for remote debugging -->
+  <arg name="node_namespace" default="detect_with_camera" />
+  <arg name="camera_name" default="camerav2_1280x720" />
+  <arg name="camera_info_dir" default="$(find aruco_ros_cvwrap)/camera_info" />
+  <arg name='use_webcam' default="false" />
+  <arg name="image_topic" default="image_rect" />
+
+  <node pkg="aruco_ros_cvwrap" type="basic_detection" name="basic_detection" clear_params="true" output="screen" launch-prefix="$(arg launch_prefix)">
+    <rosparam command="load" file="$(find aruco_ros_cvwrap)/config/ekf_config.yaml" />
+    <param name="camera_name" value="$(arg camera_name)" />
+    <param name="camera_info_url" value="file://$(arg camera_info_dir)/$(arg camera_name).yaml" />
+  </node>
+
+  <node pkg="aruco_ros_cvwrap" type="camera_node" name="camera_node" clear_params="true" output="screen" launch-prefix="$(arg launch_prefix)">
+    <param name="camera_name" value="$(arg camera_name)" />
+    <param name="camera_info_url" value="file://$(arg camera_info_dir)/$(arg camera_name).yaml" />
+    <param name="filename" value="v4l2src device=/dev/video2 ! video/x-raw, width=(int)640, height=(int)480, framerate=(fraction)30/1 ! videoflip method=0 ! video/x-raw, width=(int)640, height=(int)480 ! videoconvert ! video/x-raw, format=(string)BGR ! appsink" />
+  </node>
+</launch>

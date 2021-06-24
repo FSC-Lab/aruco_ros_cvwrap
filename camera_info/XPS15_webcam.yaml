@@ -1,0 +1,20 @@
+image_width: 640
+image_height: 480
+camera_name: XPS15_webcam
+camera_matrix:
+  rows: 3
+  cols: 3
+  data: [632.3730012050514, 0, 303.920764120932, 0, 638.0412653525582, 236.0498140402792, 0, 0, 1]
+distortion_model: plumb_bob
+distortion_coefficients:
+  rows: 1
+  cols: 5
+  data: [0.2276663993602124, -0.7115372006084015, -0.000647908487245475, 0.009406135820060908, 0]
+rectification_matrix:
+  rows: 3
+  cols: 3
+  data: [1, 0, 0, 0, 1, 0, 0, 0, 1]
+projection_matrix:
+  rows: 3
+  cols: 4
+  data: [640.711669921875, 0, 307.584844174271, 0, 0, 651.7935180664062, 235.7726343394825, 0, 0, 0, 1, 0]
