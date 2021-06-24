@@ -35,11 +35,16 @@ int main(int argc, char* argv[]) {
   auto aruco_dict = utils::SetArucoDictFromRosParams(nh);
   auto tag_length = nh.param("len", 0.1);
 
-  auto camera_name = ""s;
-  if (!nh.getParam("camera_name", camera_name)) {
+  auto base_topic = ""s;
+  if (!nh.getParam("base_topic", base_topic)) {
     ROS_ERROR("error: the following param is required: camera_name");
     return 1;
   }
+
+  auto image_topic = nh.param("image_topic", "image"s);
+
+  auto camera_topic = base_topic + "/" + image_topic;
+  auto camera_info_topic = base_topic + "/" + "camera_info";
 
   // Setup advertisers for both full Pose measurement and Euler Angle objects
   // auto pose_pub = nh.advertise<geometry_msgs::PoseArray>("/aruco/tag_detections", 10);
@@ -54,7 +59,6 @@ int main(int argc, char* argv[]) {
   auto tag_translation = Eigen::Map<Eigen::Vector3d>(&detection.pose.pose.position.x);
   auto tag_rotation = Eigen::Map<Sophus::SO3d>(&detection.pose.pose.orientation.x);
   auto detection_covariance = Eigen::Map<Eigen::Matrix<double, 6, 6>>(detection.pose.covariance.data());
-  ROS_INFO("Attempting to subscribe to /%s/image and /%s/camera_info", camera_name.c_str(), camera_name.c_str());
 
   auto ekf = std::unordered_map<int, TargetTrackerKF>();
 
@@ -76,8 +80,9 @@ int main(int argc, char* argv[]) {
   }
   auto R_var = Eigen::Map<Eigen::Matrix<double, 6, 1>>(r_var.data()).asDiagonal();
   auto last_measurement = ros::Time::now();
+  ROS_INFO("Attempting to subscribe to %s and %s", camera_topic.c_str(), camera_info_topic.c_str());
   auto image_sub = it.subscribeCamera(
-      "/"s + camera_name + "/image"s, 10,
+      camera_topic, 10,
       [&](const sensor_msgs::ImageConstPtr& img_ptr, const sensor_msgs::CameraInfoConstPtr& info_ptr) {
         // Move the data that the info_ptr points to, also makes the data nonconst
         auto info = std::move(*info_ptr);
