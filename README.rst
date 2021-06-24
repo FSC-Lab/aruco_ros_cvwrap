@@ -98,13 +98,21 @@ replace :code:`CAMERA_NAME` and :code:`file://PATH/TO/CAMERA_NAME.yaml` as appro
 .. code::
 
   rosrun aruco_ros_cvwrap basic_detection \
-  _camera_name:=CAMERA_NAME \ 
-  _camera_info_url:=file://PATH/TO/CAMERA_NAME.yaml \
+  _base_topic:=BASE_TOPIC \
+  _image_topic:=IMAGE_TOPIC
 
 Note that this node will subscribe to two synchronized topics:
 
-* :code:`/CAMERA_NAME/image`
-* :code:`/CAMERA_NAME/camera_info`
+* :code:`BASE_TOPIC/IMAGE_TOPIC`
+* :code:`BASE_TOPIC/camera_info`
+
+where BASE_TOPIC may be of the form :code:`/CAMERA_NAME` and IMAGE_TOPIC defaults to :code:`image`
+
+.. note::
+
+  This interface is compatible with simulated cameras. For example, refer to `this tutorial <http://gazebosim.org/tutorials?tut=ros_gzplugins#Camera>`_ where Gazebo publishes on :code:`/rrobot/camera1/image_raw` and :code:`/rrobot/camera1/camera_info`. 
+
+  Now assume you added an aruco tag to the gazebo environment where the *rrobot* is deployed and you want to detect it. In this case, run :code:`basic_detection`, setting the rosparam :code:`base_topic` to :code:`/rrobot/camera1` and :code:`image_topic` to :code:`image_raw`.
 
 If this node detects an Aruco marker, it will publish on the topic
 
