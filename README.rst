@@ -130,3 +130,20 @@ with a custom message type :code:`aruco_ros_cvwrap/ArucoTagDetections`, which is
 
   * each :code:`ArucoTag` object has field :code:`pose` that is a :code:`geometry_msgs.PoseWithCovarianceStamped` object
   * each :code:`ArucoTagDetections` object is a list of :code:`ArucoTag` objects
+
+Launch Files
+============
+
+Two :code:`.launch` files are provided to ease usage of this package. 
+
+* :code:`basic_camera.launch` wraps :code:`camera_node`, automatically binding :code:`camera_info_url` to search inside the camera_info directory using the camera's name. A use case is shown below 
+
+  .. code::
+
+    roscd aruco_ros_cvwrap
+    ln -sf ~/Downloads/mycamera.yaml camera_info/mycamera.yaml
+    roslaunch aruco_ros_cvwrap basic_camera.launch camera_name:=mycamera index:=0
+
+* :code:`basic_detection.launch` wraps :code:`basic_detection`
+
+* :code:`detect_with_camera.launch` altogether wraps :code:`basic_camera.launch` and :code:`basic_detection.launch`, with ensuring that :code:`basic_detection.launch` must subscribe to the correct topic published by :code:`basic_camera.launch`

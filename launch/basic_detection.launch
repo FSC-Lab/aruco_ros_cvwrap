@@ -1,15 +1,12 @@
 <launch>
-  <arg name="launch_prefix" default="" /> <!-- set to value="gdbserver localhost:10000" for remote debugging -->
+  <arg name="launch_prefix" default="" />
   <arg name="node_namespace" default="basic_detection" />
-  <arg name="camera_name" default="camerav2_1280x720" />
-  <arg name="camera_info_dir" default="$(find aruco_ros_cvwrap)/camera_info" />
-  <arg name='use_webcam' default="false" />
-  <arg name="image_topic" default="image_rect" />
+  <arg name="base_topic" default="/XPS15_webcam" />
+  <arg name="image_topic" default="image" />
   
   <node pkg="aruco_ros_cvwrap" type="basic_detection" name="$(arg node_namespace)" clear_params="true" output="screen" launch-prefix="$(arg launch_prefix)">
-    <!-- Remap topics from those used in code to those on the ROS network -->
-    <param name="camera_name" value="$(arg camera_name)" />
-    <param name="camera_info_url" value="file://$(arg camera_info_dir)/$(arg camera_name).yaml" />
+    <rosparam command="load" file="$(find aruco_ros_cvwrap)/config/ekf_config.yaml" />
+    <param name="base_topic" value="$(arg base_topic)" />
   </node>
   
 </launch>
