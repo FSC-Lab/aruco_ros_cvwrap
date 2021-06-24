@@ -88,10 +88,13 @@ int main(int argc, char* argv[]) {
 
   // The framerate can also be set by a parameter
   auto framerate = nh.param("framerate", 30);
+  auto image_topic = nh.param("image_topic", "image"s);
+  auto camera_topic = "/"s + camera_name + "/" + image_topic;
+  auto camera_info_topic = "/"s + camera_name + "/camera_info";
 
   // Setup publishers for the image and camera info pair
-  auto img_pub = it.advertise("/"s + camera_name + "/image"s, 10);
-  auto info_pub = nh.advertise<sensor_msgs::CameraInfo>("/"s + camera_name + "/camera_info"s, 10);
+  auto img_pub = it.advertise(camera_topic, 10);
+  auto info_pub = nh.advertise<sensor_msgs::CameraInfo>(camera_info_topic, 10);
 
   auto rate = ros::Rate(framerate);
   cv::Mat frame;
