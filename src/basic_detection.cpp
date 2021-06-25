@@ -29,6 +29,8 @@ int main(int argc, char* argv[]) {
 
   ros::init(argc, argv, "basic_detection");
   auto nh = ros::NodeHandle("~");
+  auto pub_image = nh.param("pub_image", false);
+
   auto it = image_transport::ImageTransport(nh);
 
   auto params = utils::SetDetectorParamsFromRosParams(nh);
@@ -48,7 +50,7 @@ int main(int argc, char* argv[]) {
 
   // Setup advertisers for both full Pose measurement and Euler Angle objects
   // auto pose_pub = nh.advertise<geometry_msgs::PoseArray>("/aruco/tag_detections", 10);
-  auto detections_pub = nh.advertise<aruco_ros_cvwrap::ArucoTagDetections>("/aruco/tag_detections", 10);
+  auto detections_pub = nh.advertise<aruco_ros_cvwrap::ArucoTagDetections>("/tag_detections", 10);
 
   // This is the Pose cache to be repeatedly overwritten for each new tag pose estimate in the inner loop
   auto detection = aruco_ros_cvwrap::ArucoTag();
@@ -81,6 +83,13 @@ int main(int argc, char* argv[]) {
   auto R_var = Eigen::Map<Eigen::Matrix<double, 6, 1>>(r_var.data()).asDiagonal();
   auto last_measurement = ros::Time::now();
   ROS_INFO("Attempting to subscribe to %s and %s", camera_topic.c_str(), camera_info_topic.c_str());
+
+  auto img_pub = image_transport::Publisher();
+
+  if (pub_image) {
+    img_pub = it.advertise("/tag_detection_image", 10);
+  }
+
   auto image_sub = it.subscribeCamera(
       camera_topic, 10,
       [&](const sensor_msgs::ImageConstPtr& img_ptr, const sensor_msgs::CameraInfoConstPtr& info_ptr) {
@@ -111,12 +120,22 @@ int main(int argc, char* argv[]) {
           cv::aruco::estimatePoseSingleMarkers(corners, tag_length, camera_matrix, distortion_coeffs, rvecs, tvecs);
           last_measurement = tag_poses.header.stamp = ros::Time::now();
           // aruco_ros_cvwrap::EulerAngles ang;
+
+          auto image_copy = cv::Mat();
+          if (pub_image) {
+            cv_img_ptr->image.copyTo(image_copy);
+            cv::aruco::drawDetectedMarkers(image_copy, corners, ids);
+          }
           for (auto i = 0U; i < ids.size(); ++i) {
             // Construct an Eigen::Map spanning over elements of the cv::Vec for translation
             auto translation = Eigen::Map<Eigen::Vector3d>(tvecs[i].val);
 
             // Construct an Eigen::Map spanning over elements of the cv::Vec for rotation
             auto rotation = Eigen::Map<Eigen::Vector3d>(rvecs[i].val);
+
+            if (pub_image) {
+              cv::aruco::drawAxis(image_copy, camera_matrix, distortion_coeffs, rvecs[i], tvecs[i], tag_length);
+            }
 
             auto C = Sophus::SO3d::exp(-rotation);
             // Construct the SE3 object representing the pose. The rationale is:
@@ -150,6 +169,9 @@ int main(int argc, char* argv[]) {
           }
           // pose_pub.publish(tag_poses);
           detections_pub.publish(tag_poses);
+          auto msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", image_copy).toImageMsg();
+
+          img_pub.publish(msg);
         }
       });
 
