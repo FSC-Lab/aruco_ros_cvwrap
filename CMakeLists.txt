@@ -41,7 +41,7 @@ generate_messages(
   geometry_msgs
 )
     
-catkin_package(CATKIN_DEPENDS message_runtime)
+catkin_package(CATKIN_DEPENDS message_runtime image_transport cv_bridge)
 
 include_directories(
   ${catkin_INCLUDE_DIRS}
