@@ -1,6 +1,5 @@
 #include <aruco_ros_cvwrap/ArucoTag.h>
 #include <aruco_ros_cvwrap/ArucoTagDetections.h>
-#include <camera_info_manager/camera_info_manager.h>
 #include <cv_bridge/cv_bridge.h>
 #include <geometry_msgs/Pose.h>
 #include <geometry_msgs/PoseWithCovariance.h>
@@ -8,21 +7,19 @@
 #include <ros/ros.h>
 #include <sensor_msgs/CameraInfo.h>
 #include <sensor_msgs/Image.h>
+
 #include <opencv2/aruco.hpp>
 #include <opencv2/core.hpp>
+#include <sophus/se3.hpp>
 #include <sophus/so3.hpp>
 
 #include <Eigen/Core>
 #include <Eigen/Geometry>
-
-#include <algorithm>
-#include <iostream>
 #include <unordered_map>
+#include <vector>
 
 #include "TargetTrackerKF.hpp"
 #include "utils.hpp"
-
-using namespace std::string_literals;
 
 int main(int argc, char* argv[]) {
   using namespace std::string_literals;

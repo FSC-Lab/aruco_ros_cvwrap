@@ -1,17 +1,14 @@
 #include <camera_info_manager/camera_info_manager.h>
 #include <cv_bridge/cv_bridge.h>
-#include <geometry_msgs/Pose.h>
-#include <geometry_msgs/PoseArray.h>
 #include <image_transport/image_transport.h>
 #include <ros/ros.h>
 #include <sensor_msgs/CameraInfo.h>
 #include <sensor_msgs/Image.h>
+
 #include <opencv2/core.hpp>
 #include <opencv2/videoio.hpp>
 
-#include <algorithm>
-#include <iostream>
-#include <sstream>
+#include <string>
 
 using namespace std::string_literals;
 
