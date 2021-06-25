@@ -5,6 +5,8 @@
   <arg name="base_topic" default="/$(arg camera_name)" />
   <arg name="image_topic" default="image" />
   <arg name="index" default="0"/>
+  <arg name="pub_image" default="false"/>
+  <arg name="tag_length" default="0.1"/>
 
   <include file="$(find aruco_ros_cvwrap)/launch/basic_camera.launch" pass_all_args="true"/>
 

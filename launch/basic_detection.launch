@@ -3,10 +3,14 @@
   <arg name="node_namespace" default="basic_detection" />
   <arg name="base_topic" default="/XPS15_webcam" />
   <arg name="image_topic" default="image" />
-  
+  <arg name="pub_image" default="false"/>
+  <arg name="tag_length" default="0.1"/>
+
   <node pkg="aruco_ros_cvwrap" type="basic_detection" name="$(arg node_namespace)" clear_params="true" output="screen" launch-prefix="$(arg launch_prefix)">
     <rosparam command="load" file="$(find aruco_ros_cvwrap)/config/ekf_config.yaml" />
+    <param name="tag_length" value="$(arg tag_length)"/>
+    <param name="pub_image" value="$(arg pub_image)"/>
     <param name="base_topic" value="$(arg base_topic)" />
   </node>
-  
+
 </launch>
